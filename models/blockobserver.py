@@ -16,21 +16,12 @@ class BlockEventPublisher:
         for subscriber in self._subscribers:
             subscriber(object)
 
-    def x(self, s: str) -> None:
-        """
-        abc
-        :param s:
-        :return:
-        """
-        x = 0
-
     def add_subscriber(self, subscriber) -> None:
         """
         Add subscriber who will be notified on events.
 
         :param subscriber: Function which will be notified on publish. Must accept one parameter (object)
         """
-        print(subscriber, type(subscriber))
         self._subscribers.add(subscriber)
 
     def remove_subscriber(self, subscriber) -> None:

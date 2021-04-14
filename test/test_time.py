@@ -1,6 +1,5 @@
 import unittest
-from models import InvalidTimeException
-from models.timestamp import Timestamp, TimestampBuilder
+from models.timestamp import Timestamp, TimestampBuilder, InvalidTimeException
 
 
 class MyTestCase(unittest.TestCase):

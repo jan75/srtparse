@@ -2,7 +2,8 @@ import unittest
 
 from models.blockobserver import BlockEventPublisher
 
-class TestMetaclasses(unittest.TestCase):
+
+class TestEventPublisher(unittest.TestCase):
     counter = 0
     last_event_obj = None
 
@@ -20,6 +21,3 @@ class TestMetaclasses(unittest.TestCase):
 
         self.assertEqual(1, self.counter)
         self.assertEqual('my event', self.last_event_obj)
-
-
-
