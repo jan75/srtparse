@@ -15,18 +15,3 @@ jobs:
         run: pip3 install -r ./requirements.txt
       - name: Running unit tests
         run: python -m unittest discover test/
-  build-documentation:
-    name: Build documentation
-    runs-on: ubuntu-latest
-    needs: test-code
-    steps:
-      - name: Check out repository code
-        uses: actions/checkout@v2
-      - run: mkdir ~/virtualenv
-      - name: Creating python virtualenv
-        run: python3 -m venv ~/virtualenv/srtparse_virtualenv
-      - run: cd $GITHUB_WORKSPACE
-      - name: Installing dependencies
-        run: pip3 install -r ./requirements.txt
-      - name: Building docs
-        run: sphinx-build docs/ docs/_build
