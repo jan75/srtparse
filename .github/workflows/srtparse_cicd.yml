@@ -1,0 +1,27 @@
+name: srtparse CI/CD action
+on: [push]
+jobs:
+  test-code:
+    name: Build documentation
+    runs-on: ubuntu-latest
+    steps:
+      - run: echo "Starting job 'test-code'"
+      - name: Check out repository code
+        uses: actions/checkout@v2
+      - name: Preparing virtualenv
+          - run: mkdir ~/virtualenv
+          - run: python3 -m venv ~/virtualenv/srtparse_virtualenv
+      - run: cd $GITHUB_WORKSPACE
+      - name: Installing dependencies
+        run: pip3 install -r ./requirements.txt
+      - name: Build documentation
+          - run: cd docs
+          - run: make html
+      - run: echo "Job 'test-code' finished"
+  build-documentation:
+    name: Test code
+    runs-on: ubuntu-latest
+    steps:
+      - run: cd $GITHUB_WORKSPACE
+      - run: pwd
+      - run: ls -l
