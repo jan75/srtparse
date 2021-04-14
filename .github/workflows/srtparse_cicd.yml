@@ -2,10 +2,9 @@ name: srtparse CI/CD action
 on: [push]
 jobs:
   test-code:
-    name: Build documentation
+    name: Test code
     runs-on: ubuntu-latest
     steps:
-      - run: echo "Starting job 'build documentation'"
       - name: Check out repository code
         uses: actions/checkout@v2
       - run: mkdir ~/virtualenv
@@ -14,14 +13,20 @@ jobs:
       - run: cd $GITHUB_WORKSPACE
       - name: Installing dependencies
         run: pip3 install -r ./requirements.txt
-      - run: cd docs
-      - name: Building docs
-        run: make html
-      - run: echo "Job 'build documentation' finished"
+      - name: Running unit tests
+        run: python -m unittest discover test/
   build-documentation:
-    name: Test code
+    name: Build documentation
     runs-on: ubuntu-latest
+    needs: test-code
     steps:
+      - name: Check out repository code
+        uses: actions/checkout@v2
+      - run: mkdir ~/virtualenv
+      - name: Creating python virtualenv
+        run: python3 -m venv ~/virtualenv/srtparse_virtualenv
       - run: cd $GITHUB_WORKSPACE
-      - run: pwd
-      - run: ls -l
+      - name: Installing dependencies
+        run: pip3 install -r ./requirements.txt
+      - name: Building docs
+        run: sphinx-build docs/ docs/_build
