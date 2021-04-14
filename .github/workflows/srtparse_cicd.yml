@@ -5,19 +5,19 @@ jobs:
     name: Build documentation
     runs-on: ubuntu-latest
     steps:
-      - run: echo "Starting job 'test-code'"
+      - run: echo "Starting job 'build documentation'"
       - name: Check out repository code
         uses: actions/checkout@v2
-      - name: Preparing virtualenv
-          - run: mkdir ~/virtualenv
-          - run: python3 -m venv ~/virtualenv/srtparse_virtualenv
+      - run: mkdir ~/virtualenv
+      - name: Creating python virtualenv
+        run: python3 -m venv ~/virtualenv/srtparse_virtualenv
       - run: cd $GITHUB_WORKSPACE
       - name: Installing dependencies
         run: pip3 install -r ./requirements.txt
-      - name: Build documentation
-          - run: cd docs
-          - run: make html
-      - run: echo "Job 'test-code' finished"
+      - run: cd docs
+      - name: Building docs
+        run: make html
+      - run: echo "Job 'build documentation' finished"
   build-documentation:
     name: Test code
     runs-on: ubuntu-latest
