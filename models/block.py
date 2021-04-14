@@ -1,15 +1,18 @@
 from enum import Enum
 
+from models.eventpublisher import BlockEventPublisher
 from models.timestamp import Timestamp
 
 
 class Block:
-    def __init__(self, id: int, starttime: Timestamp, endtime: Timestamp, text: [str]):
-        object.__setattr__(self, '_mementos', [])
+    def __init__(self, eventpublisher: BlockEventPublisher, id: int, starttime: Timestamp, endtime: Timestamp, text: [str]):
+        object.__setattr__(self, '_eventpublisher', eventpublisher)
         object.__setattr__(self, 'id', id)
         object.__setattr__(self, 'starttime', starttime)
         object.__setattr__(self, 'endtime', endtime)
         object.__setattr__(self, '_text', text)
+
+        self._eventpublisher = eventpublisher
 
     def __setattr__(self, name, value):
         # identify field
@@ -21,7 +24,7 @@ class Block:
             field = Field.ENDTIME
         elif name == '_text':
             field = Field.TEXT
-        elif name == '_mementos':
+        elif name == '_eventpublisher':
             return
         else:
             raise Exception('Invalid field')
@@ -32,8 +35,8 @@ class Block:
 
         if cur_value is not None:
             # store old value in memento to track changes
-            memento = BlockFieldMemento(field, cur_value)
-            self._mementos.append(memento)
+            memento = BlockMemento(self, field, cur_value)
+            self._eventpublisher.publish(memento)
 
         # write new value to object
         object.__setattr__(self, name, value)
@@ -62,26 +65,6 @@ class Block:
     def __hash__(self):
         return hash(self.id) + hash(self.starttime) + hash(self.endtime) + hash(self._text)
 
-    def undo(self):
-        try:
-            memento = self._mementos.pop()
-            field = memento.field
-            if field == Field.ID:
-                object.__setattr__(self, 'id', memento.value)
-            elif field == Field.STARTTIME:
-                object.__setattr__(self, 'starttime', memento.value)
-            elif field == Field.ENDTIME:
-                object.__setattr__(self, 'endtime', memento.value)
-            elif field == Field.TEXT:
-                object.__setattr__(self, '_text', memento.value)
-        except IndexError:
-            # no more stuff to undo
-            return
-
-    def reset(self):
-        while self._mementos:
-            self.undo()
-
     def add_line(self, line: str) -> None:
         text = self._text
 
@@ -97,10 +80,12 @@ class Field(Enum):
     STARTTIME = 1
     ENDTIME = 2
     TEXT = 3
+    BLOCK = 4
 
 
-class BlockFieldMemento:
-    def __init__(self, field: Field, value: any):
+class BlockMemento:
+    def __init__(self, block: Block, field: Field, value: any):
+        self.block = block
         self.field = field
         self.value = value
 
@@ -108,7 +93,7 @@ class BlockFieldMemento:
         return '{}: {}'.format(self.field, self.value)
 
     def __repr__(self) -> str:
-        return str(self)
+        return '<BlockMemento {}, {}, {}>'.format(repr(self.block), repr(self.field), repr(self.value))
 
 
 class BlockBuilder:
@@ -118,14 +103,6 @@ class BlockBuilder:
         self.endtime = None
         self.text = []
 
-    def reset(self) -> 'BlockBuilder':
-        self.id = None
-        self.starttime = None
-        self.endtime = None
-        self.text.clear()
-
-        return self
-
-    def build(self) -> Block:
+    def build(self, eventpublisher: BlockEventPublisher) -> Block:
         if self.id and self.starttime and self.endtime:
-            return Block(self.id, self.starttime, self.endtime, self.text)
+            return Block(eventpublisher, self.id, self.starttime, self.endtime, self.text)

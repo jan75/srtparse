@@ -1,7 +1,8 @@
 import re
 from enum import Enum
 
-from models.block import Block, BlockBuilder
+from models.block import Block, BlockBuilder, Field
+from models.eventpublisher import BlockEventPublisher
 from models.timestamp import TimestampBuilder
 
 
@@ -13,11 +14,39 @@ class Subtitle:
     pattern_time_detail = re.compile(r'([0-9]{2}):([0-9]{2}):([0-9]{2})[.,]([0-9]{3})')
 
     def __init__(self, path: str):
+        self.eventpublisher = BlockEventPublisher()
+        self.eventpublisher.add_subscriber(self.handle_event)
+
         self.path = path
         self.blocks = []
+        self._mementos = []
 
     def __str__(self):
         return '\n\n'.join([str(block) for block in self.blocks])
+
+    def handle_event(self, memento) -> None:
+        print('event received: {}'.format(memento))
+        self._mementos.append(memento)
+
+    def undo(self):
+        try:
+            memento = self._mementos.pop()
+            field = memento.field
+            if field == Field.ID:
+                object.__setattr__(memento.block, 'id', memento.value)
+            elif field == Field.STARTTIME:
+                object.__setattr__(memento.block, 'starttime', memento.value)
+            elif field == Field.ENDTIME:
+                object.__setattr__(memento.block, 'endtime', memento.value)
+            elif field == Field.TEXT:
+                object.__setattr__(memento.block, '_text', memento.value)
+        except IndexError:
+            # no more stuff to undo
+            return
+
+    def reset(self):
+        while self._mementos:
+            self.undo()
 
     def validate(self, try_fix: bool = False) -> ['ValidationError']:
         self.blocks.sort()
@@ -78,10 +107,6 @@ class Subtitle:
 
     def remove_block(self, block: 'Block') -> None:
         self.blocks.remove(block)
-
-    def replace_block(self, old: 'Block', new: 'Block') -> None:
-        self.remove_block(old)
-        self.insert_block(new)
 
     def parse_file(self) -> None:
         '''
@@ -149,12 +174,12 @@ class Subtitle:
                     prev_state = State.TEXT
 
                     if index == last_line:
-                        if not self.insert_block(block_builder.build()):
+                        if not self.insert_block(block_builder.build(self.eventpublisher)):
                             raise ParseException('Duplicate id in block with id {}'.format(block_builder.id))
 
                     continue
                 elif line_type == State.EMPTY:
-                    if not self.insert_block(block_builder.build()):
+                    if not self.insert_block(block_builder.build(self.eventpublisher)):
                         raise ParseException('Duplicate id in block with id {}'.format(block_builder.id))
                     # self.blocks.append(block)
 

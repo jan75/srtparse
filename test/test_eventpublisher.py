@@ -1,6 +1,6 @@
 import unittest
 
-from models.blockobserver import BlockEventPublisher
+from models.eventpublisher import BlockEventPublisher
 
 
 class TestEventPublisher(unittest.TestCase):
