@@ -48,6 +48,17 @@ class Subtitle:
         while self._mementos:
             self.undo()
 
+    def insert_block(self, block: 'Block') -> bool:
+        if block in self.blocks:
+            print('Block already exists: \n{}'.format(block))
+            return False
+
+        self.blocks.append(block)
+        return True
+
+    def remove_block(self, block: 'Block') -> None:
+        self.blocks.remove(block)
+
     def validate(self, try_fix: bool = False) -> ['ValidationError']:
         self.blocks.sort()
 
@@ -96,17 +107,6 @@ class Subtitle:
             last_endtime = block.endtime
             if len(error.errors) > 0:
                 errors.append(error)
-
-    def insert_block(self, block: 'Block') -> bool:
-        if block in self.blocks:
-            print('Block already exists: \n{}'.format(block))
-            return False
-
-        self.blocks.append(block)
-        return True
-
-    def remove_block(self, block: 'Block') -> None:
-        self.blocks.remove(block)
 
     def parse_file(self) -> None:
         '''
