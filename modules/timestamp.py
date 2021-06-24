@@ -1,15 +1,21 @@
 import math
 
 class Timestamp:
-    def __init__(self):
-        """
-        Use `TimeBuilder` to create a timestamp object.
+    """
+    Holds information about a subtitle timestamp of format::
 
-        :param hours:
-        :param minutes:
-        :param seconds:
-        :param milliseconds:
-        """
+        00:01:22.034
+
+    Use `TimeBuilder` to create a timestamp object. Objects can be compared with other objects using the
+    :meth:`compare` function.
+
+    :param hours:
+    :param minutes:
+    :param seconds:
+    :param milliseconds:
+    """
+    def __init__(self):
+
         self.hours = 0
         self.minutes = 0
         self.seconds = 0
@@ -85,6 +91,12 @@ class Timestamp:
         return False
 
     def compare(self, other: 'Timestamp') -> int:
+        """
+        Compare this timestamp with another timestamp
+
+        :param other: Timestamp to compare against
+        :return: Negative value if smaller (earlier), zero if equal, positive value if bigger (later)
+        """
         if self.hours > other.hours:
             return 1
         elif self.hours < other.hours:
@@ -193,6 +205,10 @@ class Timestamp:
 
 
 class TimestampBuilder:
+    """
+    Timestamp builder class which checks validity of values.
+    """
+
     def __init__(self):
         self.hours = 0
         self.minutes = 0

@@ -1,6 +1,6 @@
 import unittest
 
-from models.eventpublisher import BlockEventPublisher
+from modules.eventpublisher import BlockEventPublisher
 
 
 class TestEventPublisher(unittest.TestCase):
@@ -21,3 +21,6 @@ class TestEventPublisher(unittest.TestCase):
 
         self.assertEqual(1, self.counter)
         self.assertEqual('my event', self.last_event_obj)
+
+if __name__ == '__main__':
+    unittest.main()

@@ -1,25 +1,23 @@
-.. srtparse documentation master file, created by
-   sphinx-quickstart on Wed Apr 14 13:26:10 2021.
-   You can adapt this file completely to your liking, but it should at least
-   contain the root `toctree` directive.
+srtparse documentation
+======================
 
-Welcome to srtparse's documentation!
-====================================
+Program to parse and modify SubRIP (\*.srt) subtitle files.
+
+..  toctree::
+    :maxdepth: 2
+    :caption: Table of Contents
+
+    Home <self>
+    Modules <modules/index>
 
 .. automodule:: app
    :members:
+   :undoc-members:
 
-.. toctree::
-   :maxdepth: 2
-   :caption: models:
-
-   models/subtitle
-   models/blockobserver
 
 
 Indices and tables
 ==================
 
 * :ref:`genindex`
-* :ref:`modindex`
 * :ref:`search`

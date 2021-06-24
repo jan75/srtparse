@@ -154,7 +154,7 @@ if __name__ == '__main__':
     folder = path.dirname(file)
     filename = path.basename(file)
     filename_no_ext = path.splitext(filename)[0]
-    #print('folder: {}\nfilename: {}\nfilename_no_ext: {}'.format(folder, filename, filename_no_ext))
+    # print('folder: {}\nfilename: {}\nfilename_no_ext: {}'.format(folder, filename, filename_no_ext))
 
     input_data = json.loads(ffprobe_result.stdout)
     subtitle_streams = []
